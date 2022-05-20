@@ -146,10 +146,11 @@ describe('libmime', () => {
         it('should decode mime words', () => {
             expect('Jõge-vaŽ zz Jõge-vaŽ Jõge-vaŽ Jõge-vaŽ').to.equal(
                 libmime.decodeWordsWithSpace(
-                    '=?ISO-8859-13?Q?J=F5ge-va=DE?= zz =?ISO-8859-13?Q?J=F5ge-va=DE?= =?ISO-8859-13?Q?J=F5ge-va=DE?= =?ISO-8859-13?Q?J=F5ge-va=DE?='
+                    '=?ISO-8859-13?Q?J=F5ge-va=DE?= zz =?ISO-8859-13?Q?J=F5ge-va=DE?= =?ISO-8859-13?Q?J=F5ge-va=DE?= =?ISO-8859-13?Q?J=F5ge-va=DE?=',
+                    ' '
                 )
             );
-            expect('Sssś Lałalalala').to.equal(libmime.decodeWordsWithSpace('=?UTF-8?B?U3NzxZsgTGHFgmFsYQ==?= =?UTF-8?B?bGFsYQ==?='));
+            expect('Sssś Lałalalala').to.equal(libmime.decodeWordsWithSpace('=?UTF-8?B?U3NzxZsgTGHFgmFsYQ==?=\r\n =?UTF-8?B?bGFsYQ==?=', ' '));
         });
 
         it('should decode ascii range', () => {
@@ -158,8 +159,13 @@ describe('libmime', () => {
                 output1 = '=?UTF-8?Q?=D0=BC=D0=B5=D1=82=D0=B5=D0=BB=D1=8C=22_?= =?UTF-8?Q?=D0=B2=D1=8C=D1=8E=D0=B3=D0=B0?=',
                 output2 = "=?UTF-8?Q?=D0=BC=D0=B5=D1=82=D0=B5=D0=BB=D1=8C'?= =?UTF-8?Q?=D0=B2=D1=8C=D1=8E=D0=B3=D0=B0?=";
 
-            expect(libmime.decodeWordsWithSpace(output1)).to.equal(input1);
-            expect(libmime.decodeWordsWithSpace(output2)).to.equal(input2);
+            expect(libmime.decodeWordsWithSpace(output1, ' ')).to.equal(input1);
+            expect(libmime.decodeWordsWithSpace(output2, ' ')).to.equal(input2);
+        });
+
+        it('should join base64 encoding which end with = and decode correctly', () => {
+            const input = '=?UTF-8?B?MjAxOSAg6L6y5puG5paw5bm0?= =?UTF-8?B?6Zu75a2Q6LOA5Y2h5Y+K57C95ZCN5qqU?=';
+            expect(libmime.decodeWordsWithSpace(input, ' ', true)).to.equal('MjAxOSAg6L6y5puG5paw5bm0 6Zu75a2Q6LOA5Y2h5Y+K57C95ZCN5qqU');
         });
     });
 
